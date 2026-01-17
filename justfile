@@ -65,12 +65,16 @@ test:
 fmt:
     cargo fmt --all
 
-# Run clippy lints
-lint:
-    cargo clippy --workspace
+# Check formatting (CI-style, no auto-fix)
+check-fmt:
+    cargo fmt --all -- --check
 
-# Run all checks (fmt, lint, test)
-ci: fmt lint test
+# Run clippy lints (strict: fail on warnings)
+lint:
+    cargo clippy --workspace -- -D warnings
+
+# Run all checks (check-fmt, lint, test)
+ci: check-fmt lint test
 
 # Full dev setup: install, build, and run
 setup: install build run

@@ -25,7 +25,7 @@ This is a template for [cargo-generate](https://github.com/cargo-generate/cargo-
 └─────────────────────────────────────────────┘
 ```
 
-### Create a New Project
+### Create a New Project using cargo-generate
 
 ```bash
 # Install cargo-generate (once)
@@ -50,6 +50,7 @@ You will need to have the following installed:
 - [Node.js](https://nodejs.org/) (v16+)
 - [Rust](https://www.rust-lang.org/) (stable)
 - [trunk](https://trunkrs.dev/) (for building WASM)
+- [just](https://github.com/casey/just) (command runner)
 
 Then, run:
 

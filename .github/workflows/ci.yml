@@ -44,6 +44,9 @@ jobs:
           components: rustfmt, clippy
           targets: wasm32-unknown-unknown
 
+      - name: Install just
+        uses: extractions/setup-just@v2
+
       - name: Cache Cargo
         uses: actions/cache@v4
         with:
@@ -58,13 +61,13 @@ jobs:
             ${{ runner.os }}-cargo-check-
 
       - name: Check formatting
-        run: cargo fmt --all -- --check
+        run: just check-fmt
 
-      - name: Run clippy
-        run: cargo clippy --workspace -- -D warnings
+      - name: Lint
+        run: just lint
 
       - name: Check workspace
-        run: cargo check --workspace
+        run: just check
 
   test:
     name: Test
@@ -81,6 +84,9 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
+      - name: Install just
+        uses: extractions/setup-just@v2
+
       - name: Cache Cargo
         uses: actions/cache@v4
         with:
@@ -95,7 +101,7 @@ jobs:
             ${{ runner.os }}-cargo-test-
 
       - name: Run tests
-        run: cargo test --workspace
+        run: just test
 
   build:
     name: Build
@@ -118,6 +124,9 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
+      - name: Install just
+        uses: extractions/setup-just@v2
+
       - name: Cache Cargo
         uses: actions/cache@v4
         with:
@@ -136,15 +145,10 @@ jobs:
         run: cargo install trunk --locked || true
 
       - name: Install dependencies
-        run: |
-          npm ci
-          cd crates/backend && npm ci
+        run: just install
 
-      - name: Build WASM frontend
-        run: cd crates/frontend && trunk build --release
-
-      - name: Build Neon backend
-        run: cd crates/backend && npm run build -- --release
+      - name: Build
+        run: just build
 
       - name: Verify Electron can start
         uses: coactions/setup-xvfb@v1
