@@ -117,8 +117,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-build-
 
+      - name: Install cargo-binstall
+        uses: cargo-bins/cargo-binstall@main
+
       - name: Install trunk
-        run: cargo install trunk --locked || true
+        run: cargo binstall trunk --no-confirm
 
       - name: Install dependencies
         run: just install
