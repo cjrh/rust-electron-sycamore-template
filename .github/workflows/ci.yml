@@ -129,9 +129,12 @@ jobs:
       - name: Build
         run: just build
 
+      # Smoke test: verify Electron can at least launch
+      # --no-sandbox is required because GitHub Actions runners use unprivileged
+      # containers where Chromium's SUID sandbox cannot be configured
       - name: Verify Electron can start
         uses: coactions/setup-xvfb@v1
         with:
-          run: npm start &
+          run: ./node_modules/.bin/electron . --no-sandbox &
         timeout-minutes: 1
         continue-on-error: true
