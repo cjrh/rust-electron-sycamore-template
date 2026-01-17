@@ -1,0 +1,28 @@
+{
+  "name": "rust-electron-sycamore-demo",
+  "version": "0.1.0",
+  "description": "Rust + Electron + Sycamore proof of concept - Full Rust stack demo",
+  "main": "electron/main/index.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "NODE_ENV=development electron .",
+    "build:wasm": "cd crates/frontend && trunk build --release",
+    "build:wasm:dev": "cd crates/frontend && trunk build",
+    "build:backend": "cd crates/backend && npm run build -- --release",
+    "build:backend:dev": "cd crates/backend && npm run build",
+    "build": "npm run build:wasm && npm run build:backend",
+    "watch:wasm": "cd crates/frontend && trunk watch"
+  },
+  "keywords": [
+    "rust",
+    "electron",
+    "sycamore",
+    "wasm",
+    "neon"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.0.0"
+  }
+}

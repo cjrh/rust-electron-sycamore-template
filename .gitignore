@@ -1,0 +1,28 @@
+# Rust
+/target
+Cargo.lock
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Trunk build output (generated, not source)
+/electron/renderer/
+
+# Neon build artifacts
+crates/backend/index.node
+crates/backend/target/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# Tags
+tags
+TAGS
