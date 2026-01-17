@@ -6,7 +6,7 @@
 /// # Examples
 ///
 /// ```
-/// use {{crate_name}}_frontend::math::add;
+/// use frontend::math::add;
 /// assert_eq!(add(2, 3), 5);
 /// ```
 pub fn add(a: i32, b: i32) -> i32 {
