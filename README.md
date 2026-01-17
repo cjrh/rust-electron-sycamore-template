@@ -1,4 +1,4 @@
-# Rust + Electron + Sycamore Template
+# Rust + Electron + Sycamore + Neon Template
 
 A full Rust stack template for building desktop applications with Electron.
 
@@ -25,11 +25,13 @@ This is a template for [cargo-generate](https://github.com/cargo-generate/cargo-
 └─────────────────────────────────────────────┘
 ```
 
-### Create a New Project using cargo-generate
+### Create your New Project using cargo-generate
 
 ```bash
 # Install cargo-generate (once)
 cargo install cargo-generate
+or
+cargo binstall cargo-generate (faster)
 
 # Generate from this template
 cargo generate --git https://github.com/youruser/rust-electron-sycamore-template
