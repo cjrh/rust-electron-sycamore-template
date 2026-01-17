@@ -1,5 +1,8 @@
 # Rust + Electron + Sycamore + Neon Template
 
+
+![App Screenshot](./defaultui.png)
+
 A full Rust stack template for building desktop applications with Electron.
 
 - **Frontend**: [Sycamore](https://sycamore-rs.netlify.app/) reactive UI framework compiled to WASM
