@@ -1,6 +1,7 @@
 pub mod math;
 
 use sycamore::prelude::*;
+use sycamore::web::on_mount;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -10,6 +11,9 @@ extern "C" {
 
     #[wasm_bindgen(js_namespace = ["window", "electronAPI"], js_name = rustHello)]
     fn rust_hello() -> js_sys::Promise;
+
+    #[wasm_bindgen(js_namespace = window, js_name = initDemoChart)]
+    fn init_demo_chart(canvas_id: &str);
 }
 
 #[component]
@@ -62,6 +66,23 @@ fn BackendDemo() -> View {
 }
 
 #[component]
+fn ChartDemo() -> View {
+    on_mount(move || {
+        init_demo_chart("demo-chart");
+    });
+
+    view! {
+        div(class="chart-demo") {
+            h2 { "Chart.js Demo" }
+            p { "Example JavaScript library integration" }
+            div(class="chart-container") {
+                canvas(id="demo-chart") {}
+            }
+        }
+    }
+}
+
+#[component]
 fn App() -> View {
     view! {
         main {
@@ -72,6 +93,8 @@ fn App() -> View {
             Counter {}
             hr {}
             BackendDemo {}
+            hr {}
+            ChartDemo {}
         }
     }
 }

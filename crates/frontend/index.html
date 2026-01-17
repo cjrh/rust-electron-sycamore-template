@@ -7,6 +7,35 @@
     <title>{{project-name}}</title>
     <link data-trunk rel="rust" data-wasm-opt="z" />
     <link data-trunk rel="css" href="styles.css" />
+    <link data-trunk rel="copy-file" href="assets/chart.umd.min.js" />
+    <script src="chart.umd.min.js"></script>
+    <script>
+      // Helper function for Rust/WASM to initialize a chart
+      window.initDemoChart = function(canvasId) {
+        const ctx = document.getElementById(canvasId);
+        if (!ctx) return;
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Rust', 'WASM', 'Sycamore', 'Electron', 'Neon'],
+            datasets: [{
+              label: 'Template Technologies',
+              data: [95, 88, 82, 78, 85],
+              backgroundColor: ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#eee' } } },
+            scales: {
+              y: { beginAtZero: true, ticks: { color: '#aaa' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+              x: { ticks: { color: '#aaa' }, grid: { color: 'rgba(255,255,255,0.1)' } }
+            }
+          }
+        });
+      };
+    </script>
 </head>
 <body>
 </body>

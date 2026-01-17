@@ -70,5 +70,8 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
     }
+  },
+  "dependencies": {
+    "chart.js": "^4.5.1"
   }
 }

@@ -4,9 +4,32 @@
 //! of the Neon bindings. The Neon functions in `lib.rs` are thin wrappers
 //! around these functions.
 
-/// Returns a greeting message.
+/// Returns a greeting message with system info that's inaccessible from the JS sandbox.
 pub fn hello() -> String {
-    String::from("Hello from Rust backend via Neon!")
+    let cores = std::thread::available_parallelism()
+        .map(|n| n.get().to_string())
+        .unwrap_or_else(|_| "unknown".to_string());
+
+    let kernel = get_kernel_version();
+
+    format!(
+        "Native Rust via Neon (not WASM) with full system access. \
+         CPU cores: {cores}, Kernel: {kernel}"
+    )
+}
+
+/// Returns the kernel/OS version. Reads from /proc on Linux, falls back to OS name elsewhere.
+fn get_kernel_version() -> String {
+    #[cfg(target_os = "linux")]
+    {
+        std::fs::read_to_string("/proc/sys/kernel/osrelease")
+            .map(|s| s.trim().to_string())
+            .unwrap_or_else(|_| "unknown".to_string())
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        std::env::consts::OS.to_string()
+    }
 }
 
 /// Adds two numbers together.
@@ -38,8 +61,10 @@ mod tests {
     #[test]
     fn test_hello() {
         let result = hello();
-        assert!(result.contains("Hello"));
-        assert!(result.contains("Rust"));
+        assert!(result.contains("Native Rust"));
+        assert!(result.contains("Neon"));
+        assert!(result.contains("CPU cores:"));
+        assert!(result.contains("Kernel:"));
     }
 
     #[test]
