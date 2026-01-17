@@ -1,5 +1,5 @@
 [package]
-name = "{{crate_name}}_frontend"
+name = "frontend"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
