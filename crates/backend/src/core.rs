@@ -76,8 +76,7 @@ mod tests {
         // Platform should be a known value
         let valid_platforms = ["linux", "macos", "windows", "ios", "android", "freebsd"];
         assert!(
-            valid_platforms.contains(&info.platform.as_str())
-                || !info.platform.is_empty(),
+            valid_platforms.contains(&info.platform.as_str()) || !info.platform.is_empty(),
             "Unexpected platform: {}",
             info.platform
         );
