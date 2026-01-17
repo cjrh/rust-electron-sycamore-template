@@ -132,6 +132,9 @@ jobs:
       # Smoke test: verify Electron can at least launch
       # --no-sandbox is required because GitHub Actions runners use unprivileged
       # containers where Chromium's SUID sandbox cannot be configured
+      # NOTE: This step will timeout after 1 minute because Electron is a GUI app
+      # that runs indefinitely. Check the logs for "Neon backend loaded successfully"
+      # to verify it started correctly. The timeout is expected and not a failure.
       - name: Verify Electron can start
         uses: coactions/setup-xvfb@v1
         with:
