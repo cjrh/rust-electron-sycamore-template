@@ -63,9 +63,9 @@ fn BackendDemo() -> View {
 fn App() -> View {
     view! {
         main {
-            h1 { "Rust + Electron + Sycamore Demo" }
+            h1 { "{{project-name}}" }
             p(class="subtitle") {
-                "Full Rust stack: Sycamore WASM frontend + Neon native backend"
+                "{{description}}"
             }
             Counter {}
             hr {}

@@ -1,7 +1,7 @@
 {
-  "name": "rust-electron-sycamore-demo",
+  "name": "{{project-name}}",
   "version": "0.1.0",
-  "description": "Rust + Electron + Sycamore proof of concept - Full Rust stack demo",
+  "description": "{{description}}",
   "main": "electron/main/index.js",
   "scripts": {
     "start": "electron .",
@@ -20,7 +20,7 @@
     "wasm",
     "neon"
   ],
-  "author": "",
+  "author": "{{author}}",
   "license": "MIT",
   "devDependencies": {
     "electron": "^33.0.0"

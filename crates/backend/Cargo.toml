@@ -1,7 +1,9 @@
 [package]
-name = "backend"
+name = "{{crate_name}}_backend"
 version.workspace = true
 edition.workspace = true
+authors.workspace = true
+description.workspace = true
 
 [lib]
 crate-type = ["cdylib"]

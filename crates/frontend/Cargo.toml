@@ -1,7 +1,9 @@
 [package]
-name = "frontend"
+name = "{{crate_name}}_frontend"
 version.workspace = true
 edition.workspace = true
+authors.workspace = true
+description.workspace = true
 
 [lib]
 crate-type = ["cdylib", "rlib"]

@@ -1,4 +1,4 @@
-# Rust + Electron + Sycamore Demo
+# {{project-name}}
 # Run `just` to see available commands
 
 default:

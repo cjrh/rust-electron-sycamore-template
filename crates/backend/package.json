@@ -1,7 +1,7 @@
 {
-  "name": "backend",
+  "name": "{{project-name}}-backend",
   "version": "0.1.0",
-  "description": "Neon Rust backend for Electron app",
+  "description": "Neon Rust backend for {{project-name}}",
   "main": "index.node",
   "scripts": {
     "build": "cargo-cp-artifact -nc index.node -- cargo build --message-format=json-render-diagnostics",

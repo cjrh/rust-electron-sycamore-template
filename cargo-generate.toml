@@ -1,0 +1,19 @@
+[template]
+cargo_generate_version = ">=0.18.0"
+# Files to exclude from processing (binary files, etc.)
+exclude = ["*.wasm", "*.node"]
+
+[placeholders.project-name]
+type = "string"
+prompt = "Project name (kebab-case)?"
+regex = "^[a-z][a-z0-9-]*$"
+
+[placeholders.description]
+type = "string"
+prompt = "Project description?"
+default = "A Rust + Electron + Sycamore application"
+
+[placeholders.author]
+type = "string"
+prompt = "Author name?"
+default = ""
