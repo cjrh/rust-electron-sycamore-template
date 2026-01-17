@@ -25,7 +25,7 @@
     "neon"
   ],
   "author": "{{author}}",
-  "license": "MIT",
+  "license": "{{license}}",
   "devDependencies": {
     "electron": "^33.0.0",
     "electron-builder": "^25.1.8"

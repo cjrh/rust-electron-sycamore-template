@@ -58,6 +58,15 @@ Then, run:
 just setup    # Install deps, build everything, and run
 ```
 
+### Licensing
+
+This **template repo** is licensed under the [MIT License](LICENSE). The repo
+that you generate from this template will **not** contain this license file.
+During the cargo-generate process, you will be prompted to choose your own
+licence, which will be added to the workspace `Cargo.toml`. However, you still
+need to add the appropriate LICENCE file to your code. This is not done
+automatically by cargo-generate.
+
 ### Development
 
 ```bash
