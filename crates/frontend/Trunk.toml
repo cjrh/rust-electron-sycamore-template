@@ -1,0 +1,8 @@
+[build]
+target = "index.html"
+dist = "../../electron/renderer"
+# Use relative paths for Electron's file:// protocol
+public_url = "./"
+
+[watch]
+ignore = ["../../electron", "../../crates/backend"]

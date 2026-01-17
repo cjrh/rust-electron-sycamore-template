@@ -1,0 +1,10 @@
+[package]
+name = "backend"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+neon = { version = "1", default-features = false, features = ["napi-6"] }
