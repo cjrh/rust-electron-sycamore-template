@@ -34,7 +34,7 @@ run:
     npm start
 
 # Run in development mode (with DevTools)
-dev:
+dev: build-wasm-dev build-backend-dev
     NODE_ENV=development npm start
 
 # Watch WASM frontend for changes (run in separate terminal)

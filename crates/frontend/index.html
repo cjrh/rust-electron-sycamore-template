@@ -6,67 +6,7 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'">
     <title>{{project-name}}</title>
     <link data-trunk rel="rust" data-wasm-opt="z" />
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #eee;
-            min-height: 100vh;
-        }
-        h1 {
-            color: #00d4ff;
-            text-align: center;
-            margin-bottom: 0.5rem;
-        }
-        .subtitle {
-            text-align: center;
-            color: #888;
-            margin-bottom: 2rem;
-        }
-        .counter, .backend-demo {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        h2 {
-            color: #ff6b6b;
-            margin-top: 0;
-        }
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            margin: 0.25rem;
-            transition: transform 0.1s, box-shadow 0.2s;
-        }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-        button:active {
-            transform: translateY(0);
-        }
-        p {
-            font-size: 1.1rem;
-        }
-        hr {
-            border: none;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin: 2rem 0;
-        }
-    </style>
+    <link data-trunk rel="css" href="styles.css" />
 </head>
 <body>
 </body>
