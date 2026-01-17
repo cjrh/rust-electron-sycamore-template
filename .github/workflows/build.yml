@@ -12,27 +12,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  # Skip on template repo (before cargo-generate instantiation)
-  check-template:
-    runs-on: ubuntu-latest
-    outputs:
-      is_template: ${{ steps.check.outputs.is_template }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Check if template
-        id: check
-        run: |
-          if grep -q '{{' Cargo.toml; then
-            echo "is_template=true" >> $GITHUB_OUTPUT
-            echo "::notice::Skipping build - this is a cargo-generate template repo"
-          else
-            echo "is_template=false" >> $GITHUB_OUTPUT
-          fi
-
   build:
-    needs: check-template
-    if: needs.check-template.outputs.is_template != 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -60,7 +40,7 @@ jobs:
           cache: "npm"
 
       - name: Setup Rust
-        uses: dtolnay/rust-action@stable
+        uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
 
@@ -121,8 +101,8 @@ jobs:
           if-no-files-found: ignore
 
   release:
-    needs: [check-template, build]
-    if: needs.check-template.outputs.is_template != 'true' && startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
       contents: write
