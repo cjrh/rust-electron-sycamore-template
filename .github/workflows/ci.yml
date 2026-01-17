@@ -10,28 +10,8 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  # Skip CI on template repo (before cargo-generate instantiation)
-  check-template:
-    runs-on: ubuntu-latest
-    outputs:
-      is_template: ${{ steps.check.outputs.is_template }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Check if template
-        id: check
-        run: |
-          if grep -q '{{' Cargo.toml; then
-            echo "is_template=true" >> $GITHUB_OUTPUT
-            echo "::notice::Skipping CI - this is a cargo-generate template repo"
-          else
-            echo "is_template=false" >> $GITHUB_OUTPUT
-          fi
-
   check:
     name: Check & Lint
-    needs: check-template
-    if: needs.check-template.outputs.is_template != 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -71,8 +51,6 @@ jobs:
 
   test:
     name: Test
-    needs: check-template
-    if: needs.check-template.outputs.is_template != 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -105,8 +83,6 @@ jobs:
 
   build:
     name: Build
-    needs: check-template
-    if: needs.check-template.outputs.is_template != 'true'
     runs-on: ubuntu-latest
 
     steps:
