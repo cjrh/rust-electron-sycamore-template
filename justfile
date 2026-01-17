@@ -57,6 +57,10 @@ rebuild: clean install build
 check:
     cargo check --workspace
 
+# Run tests
+test:
+    cargo test --workspace
+
 # Format Rust code
 fmt:
     cargo fmt --all
@@ -65,5 +69,32 @@ fmt:
 lint:
     cargo clippy --workspace
 
+# Run all checks (fmt, lint, test)
+ci: fmt lint test
+
 # Full dev setup: install, build, and run
 setup: install build run
+
+# === Packaging / Distribution ===
+
+# Build distributable packages for current platform
+dist: build
+    npm run dist
+
+# Build Linux packages (AppImage, deb, rpm)
+dist-linux: build
+    npm run dist:linux
+
+# Build Windows installer (requires Wine on Linux)
+dist-win: build
+    npm run dist:win
+
+# Build macOS packages (requires macOS)
+dist-mac: build
+    npm run dist:mac
+
+# Build all platforms (best done in CI)
+dist-all: build
+    npm run dist:linux
+    npm run dist:win
+    npm run dist:mac

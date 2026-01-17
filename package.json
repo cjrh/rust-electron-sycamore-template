@@ -11,7 +11,11 @@
     "build:backend": "cd crates/backend && npm run build -- --release",
     "build:backend:dev": "cd crates/backend && npm run build",
     "build": "npm run build:wasm && npm run build:backend",
-    "watch:wasm": "cd crates/frontend && trunk watch"
+    "watch:wasm": "cd crates/frontend && trunk watch",
+    "dist": "electron-builder",
+    "dist:linux": "electron-builder --linux",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac"
   },
   "keywords": [
     "rust",
@@ -23,6 +27,48 @@
   "author": "{{author}}",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^33.0.0"
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.example.{{project-name}}",
+    "productName": "{{project-name}}",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "electron/**/*",
+      "crates/backend/index.node",
+      "crates/backend/package.json",
+      "package.json"
+    ],
+    "extraResources": [],
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "rpm"
+      ],
+      "category": "Utility",
+      "maintainer": "{{author}}"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.utilities"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }

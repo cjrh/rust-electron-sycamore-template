@@ -13,6 +13,9 @@ package-lock.json
 crates/backend/index.node
 crates/backend/target/
 
+# Electron-builder output
+/dist/
+
 # OS files
 .DS_Store
 Thumbs.db

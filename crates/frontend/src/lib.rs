@@ -1,3 +1,5 @@
+pub mod math;
+
 use sycamore::prelude::*;
 use wasm_bindgen::prelude::*;
 
@@ -18,10 +20,10 @@ fn Counter() -> View {
         div(class="counter") {
             h2 { "Sycamore Counter" }
             p { "Count: " (count.get()) }
-            button(on:click=move |_| count.set(count.get() + 1)) {
+            button(on:click=move |_| count.set(math::add(count.get(), 1))) {
                 "Increment"
             }
-            button(on:click=move |_| count.set(count.get() - 1)) {
+            button(on:click=move |_| count.set(math::add(count.get(), -1))) {
                 "Decrement"
             }
         }

@@ -46,6 +46,13 @@ This project uses [just](https://github.com/casey/just) as a command runner.
 
 ### Getting Started
 
+You will need to have the following installed:
+- [Node.js](https://nodejs.org/) (v16+)
+- [Rust](https://www.rust-lang.org/) (stable)
+- [trunk](https://trunkrs.dev/) (for building WASM)
+
+Then, run:
+
 ```bash
 just setup    # Install deps, build everything, and run
 ```
