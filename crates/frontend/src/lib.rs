@@ -51,6 +51,31 @@ fn Counter() -> View {
                     }
                 }
             }
+            div(class="card-footer text-sm text-base-content/70") {
+                "This counter is built with Sycamore's reactive signals."
+            }
+        }
+    }
+}
+
+#[component]
+fn Stuff() -> View {
+    view! {
+        div(class="flex w-full bg-base-200 shadow-xl") {
+            Counter {}
+            div(class="divider divider-horizontal") {}
+            div(class="card card-xs") {
+                div(class="card-body") {
+                    h2(class="card-title text-primary") { "A DAISYUI Card" }
+                    ul(class="list-disc list-inside mb-4 bg-base-100 rounded-box") {
+                        li(class="list-row") { "Item One" }
+                        li(class="list-row") { "Item Two" }
+                        li(class="list-row") { "Item Three" }
+                    }
+                    p { "This is an example of a DAISYUI styled card component." }
+                    button(class="btn btn-primary") { "A button" }
+                }
+            }
         }
     }
 }
@@ -143,7 +168,7 @@ fn App() -> View {
             }
             // DAISYUI: flex flex-col gap-6 -> vertical stack with spacing
             div(class="flex flex-col gap-6") {
-                Counter {}
+                Stuff {}
                 BackendDemo {}
                 ChartDemo {}
             }

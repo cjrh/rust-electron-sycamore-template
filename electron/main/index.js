@@ -1,6 +1,12 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
 
+// Suppress GPU VSync errors on Linux
+app.commandLine.appendSwitch('disable-gpu-vsync');
+
+// Disable Autofill features to prevent DevTools protocol errors
+app.commandLine.appendSwitch('disable-features', 'AutofillServerCommunication');
+
 // Load the Neon backend
 let rustBackend;
 try {
