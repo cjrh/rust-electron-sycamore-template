@@ -4,7 +4,9 @@
  * See README.md section "Removing DaisyUI" for full instructions.
  */
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: all;
+};
 
 /* Custom CSS variables - work with or without DaisyUI */
 :root {
