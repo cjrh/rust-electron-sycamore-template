@@ -1,0 +1,40 @@
+/* Tailwind CSS v4 entry point with DaisyUI
+ *
+ * DAISYUI REMOVAL: Delete this file and use styles-vanilla.css instead.
+ * See README.md section "Removing DaisyUI" for full instructions.
+ */
+@import "tailwindcss";
+@plugin "daisyui";
+
+/* Custom CSS variables - work with or without DaisyUI */
+:root {
+    --app-gradient-start: #1a1a2e;
+    --app-gradient-end: #16213e;
+    --app-accent: #00d4ff;
+    --app-text: #eee;
+    --app-text-muted: #888;
+}
+
+/* Base styles */
+body {
+    background: linear-gradient(135deg, var(--app-gradient-start) 0%, var(--app-gradient-end) 100%);
+    color: var(--app-text);
+    min-height: 100vh;
+}
+
+/* Chart container needs fixed height for Chart.js */
+.chart-container {
+    position: relative;
+    max-width: 100%;
+    height: 300px;
+    margin-top: 1rem;
+}
+
+/* Custom accent color for headings */
+h1 {
+    color: var(--app-accent);
+}
+
+.subtitle {
+    color: var(--app-text-muted);
+}

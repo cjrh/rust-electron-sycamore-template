@@ -209,6 +209,74 @@ This template includes a working Chart.js example. The relevant files are:
 - `crates/frontend/assets/chart.umd.min.js` - Local Chart.js library
 - `crates/frontend/index.html` - Trunk copy directive, script tag, and `initDemoChart` helper
 - `crates/frontend/src/lib.rs` - `ChartDemo` component with `wasm_bindgen` extern declaration
-- `crates/frontend/styles.css` - Chart container styling
+- `crates/frontend/input.css` - Chart container styling
 
 To remove this example from your project, delete the `ChartDemo` component and its usage in `App`, remove the Chart.js script/helper from `index.html`, delete the assets file, and remove the chart styles from CSS.
+
+## Styling with DaisyUI
+
+This template uses [DaisyUI](https://daisyui.com/), a component library built on Tailwind CSS. It provides pre-built UI components (buttons, cards, alerts, etc.) that work with Tailwind's utility classes.
+
+### How It Works
+
+Tailwind CSS and DaisyUI are installed as npm dev dependencies. Trunk hooks compile the CSS during build:
+
+- `input.css` imports Tailwind and the DaisyUI plugin
+- Trunk's `[[hooks]]` in `Trunk.toml` run `tailwindcss` to compile `input.css` → `tailwind.css`
+- The generated `tailwind.css` is bundled with the app
+
+### Themes
+
+DaisyUI supports multiple themes. Change the theme in `crates/frontend/index.html`:
+
+```html
+<html data-theme="dark">     <!-- Current theme -->
+<html data-theme="light">    <!-- Light theme -->
+<html data-theme="cupcake">  <!-- Pastel theme -->
+```
+
+See [DaisyUI themes](https://daisyui.com/docs/themes/) for all available options.
+
+### Development
+
+CSS changes are automatically recompiled when running `just watch`. No separate terminal needed.
+
+### Removing DaisyUI
+
+If you prefer vanilla CSS or a different styling approach:
+
+1. **Update `index.html`**
+
+   Change the CSS link to use the vanilla stylesheet:
+   ```html
+   <!-- Before -->
+   <link data-trunk rel="css" href="tailwind.css" />
+
+   <!-- After -->
+   <link data-trunk rel="css" href="styles-vanilla.css" />
+   ```
+
+   Also remove the `data-theme="dark"` attribute from the `<html>` tag.
+
+2. **Remove Trunk hooks from `Trunk.toml`**
+
+   Delete the `[[hooks]]` sections at the bottom of the file.
+
+3. **Update `src/lib.rs`**
+
+   Replace DaisyUI classes with original class names. Each component has comments showing the original classes:
+   - `div(class="card bg-base-200 shadow-xl")` → `div(class="counter")` (or `backend-demo`, `chart-demo`)
+   - `button(class="btn btn-primary")` → `button`
+   - Remove wrapper `div(class="card-body")` elements
+
+4. **Remove npm dependencies** (optional)
+   ```bash
+   npm uninstall tailwindcss daisyui
+   ```
+
+5. **Delete generated files** (optional cleanup)
+   ```bash
+   rm crates/frontend/input.css crates/frontend/tailwind.css
+   ```
+
+After these changes, the app will use `styles-vanilla.css`, which contains the original styling.

@@ -11,6 +11,9 @@ node_modules/
 crates/backend/index.node
 crates/backend/target/
 
+# Generated Tailwind CSS (DAISYUI REMOVAL: delete this line)
+crates/frontend/tailwind.css
+
 # Electron-builder output
 /dist/
 

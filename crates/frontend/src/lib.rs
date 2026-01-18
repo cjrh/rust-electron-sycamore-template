@@ -1,3 +1,9 @@
+//! Frontend components using DaisyUI styling.
+//!
+//! DAISYUI REMOVAL: Replace DaisyUI classes with original class names.
+//! Original classes are in comments next to each component. Also see
+//! styles-vanilla.css for the original CSS.
+
 pub mod math;
 
 use sycamore::prelude::*;
@@ -16,24 +22,43 @@ extern "C" {
     fn init_demo_chart(canvas_id: &str);
 }
 
+/// Counter component demonstrating Sycamore reactivity.
+///
+/// DAISYUI classes used: card, card-body, btn, btn-primary, btn-secondary, badge, badge-lg
+/// Original class: "counter"
 #[component]
 fn Counter() -> View {
     let count = create_signal(0i32);
 
     view! {
-        div(class="counter") {
-            h2 { "Sycamore Counter" }
-            p { "Count: " (count.get()) }
-            button(on:click=move |_| count.set(math::add(count.get(), 1))) {
-                "Increment"
-            }
-            button(on:click=move |_| count.set(math::add(count.get(), -1))) {
-                "Decrement"
+        // DAISYUI: card card-body -> Original: div(class="counter")
+        div(class="card bg-base-200 shadow-xl") {
+            div(class="card-body") {
+                h2(class="card-title text-primary") { "Sycamore Counter" }
+                p(class="flex items-center gap-2") {
+                    "Count: "
+                    // DAISYUI: badge badge-lg badge-accent
+                    span(class="badge badge-lg badge-accent") { (count.get()) }
+                }
+                div(class="card-actions justify-start mt-2") {
+                    // DAISYUI: btn btn-primary -> Original: button
+                    button(class="btn btn-primary", on:click=move |_| count.set(math::add(count.get(), 1))) {
+                        "Increment"
+                    }
+                    // DAISYUI: btn btn-secondary -> Original: button
+                    button(class="btn btn-secondary", on:click=move |_| count.set(math::add(count.get(), -1))) {
+                        "Decrement"
+                    }
+                }
             }
         }
     }
 }
 
+/// Backend demo component showing IPC with Neon backend.
+///
+/// DAISYUI classes used: card, card-body, alert, alert-info, btn, btn-accent
+/// Original class: "backend-demo"
 #[component]
 fn BackendDemo() -> View {
     let message = create_signal(String::from("Click to call Rust backend..."));
@@ -55,16 +80,30 @@ fn BackendDemo() -> View {
     };
 
     view! {
-        div(class="backend-demo") {
-            h2 { "Neon Backend Demo" }
-            p { (message.get_clone()) }
-            button(on:click=call_backend) {
-                "Call Rust Backend"
+        // DAISYUI: card card-body -> Original: div(class="backend-demo")
+        div(class="card bg-base-200 shadow-xl") {
+            div(class="card-body") {
+                h2(class="card-title text-primary") { "Neon Backend Demo" }
+                // DAISYUI: alert alert-info -> Original: p
+                div(class="alert alert-info") {
+                    span { (message.get_clone()) }
+                }
+                div(class="card-actions justify-start mt-2") {
+                    // DAISYUI: btn btn-accent -> Original: button
+                    button(class="btn btn-accent", on:click=call_backend) {
+                        "Call Rust Backend"
+                    }
+                }
             }
         }
     }
 }
 
+/// Chart demo component showing JS library integration.
+///
+/// DAISYUI classes used: card, card-body
+/// Custom class: chart-container (height required for Chart.js)
+/// Original class: "chart-demo"
 #[component]
 fn ChartDemo() -> View {
     on_mount(move || {
@@ -72,29 +111,42 @@ fn ChartDemo() -> View {
     });
 
     view! {
-        div(class="chart-demo") {
-            h2 { "Chart.js Demo" }
-            p { "Example JavaScript library integration" }
-            div(class="chart-container") {
-                canvas(id="demo-chart") {}
+        // DAISYUI: card card-body -> Original: div(class="chart-demo")
+        div(class="card bg-base-200 shadow-xl") {
+            div(class="card-body") {
+                h2(class="card-title text-primary") { "Chart.js Demo" }
+                p(class="text-base-content/70") { "Example JavaScript library integration" }
+                // Custom class: chart-container (needs fixed height for Chart.js)
+                div(class="chart-container") {
+                    canvas(id="demo-chart") {}
+                }
             }
         }
     }
 }
 
+/// Main application component.
+///
+/// DAISYUI/Tailwind classes used: container, mx-auto, p-8, flex, flex-col, gap-6
+/// Original: main element with no specific classes
 #[component]
 fn App() -> View {
     view! {
-        main {
-            h1 { "{{project-name}}" }
-            p(class="subtitle") {
-                "{{description}}"
+        // DAISYUI: container mx-auto -> centers content with max-width
+        main(class="container mx-auto p-8 max-w-4xl") {
+            // DAISYUI: text-center for header alignment
+            div(class="text-center mb-8") {
+                h1(class="text-4xl font-bold") { "{{project-name}}" }
+                p(class="subtitle mt-2") {
+                    "{{description}}"
+                }
             }
-            Counter {}
-            hr {}
-            BackendDemo {}
-            hr {}
-            ChartDemo {}
+            // DAISYUI: flex flex-col gap-6 -> vertical stack with spacing
+            div(class="flex flex-col gap-6") {
+                Counter {}
+                BackendDemo {}
+                ChartDemo {}
+            }
         }
     }
 }

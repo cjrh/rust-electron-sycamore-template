@@ -6,3 +6,14 @@ public_url = "./"
 
 [watch]
 ignore = ["../../electron", "../../crates/backend"]
+
+# === Tailwind CSS + DaisyUI (via npm) ===
+# DAISYUI REMOVAL: Delete this [[hooks]] section and change index.html
+# to use rel="css" href="styles-vanilla.css"
+
+# Build Tailwind CSS with DaisyUI before Trunk processes assets
+# Uses npm-installed packages from project root
+[[hooks]]
+stage = "pre_build"
+command = "sh"
+command_arguments = ["-c", "../../node_modules/.bin/tailwindcss -i input.css -o tailwind.css --minify"]

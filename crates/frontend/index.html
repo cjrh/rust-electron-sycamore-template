@@ -1,12 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<!-- DAISYUI: data-theme enables DaisyUI themes (try: light, dark, cupcake, etc.) -->
+<!-- See https://daisyui.com/docs/themes/ for all theme options -->
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'">
     <title>{{project-name}}</title>
     <link data-trunk rel="rust" data-wasm-opt="z" />
-    <link data-trunk rel="css" href="styles.css" />
+    <!-- DAISYUI: Tailwind CSS compiled via npm. To remove DaisyUI, change to href="styles-vanilla.css" -->
+    <link data-trunk rel="css" href="tailwind.css" />
     <link data-trunk rel="copy-file" href="assets/chart.umd.min.js" />
     <script src="chart.umd.min.js"></script>
     <script>
