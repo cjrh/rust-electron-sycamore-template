@@ -4,8 +4,12 @@
 //! Original classes are in comments next to each component. Also see
 //! styles-vanilla.css for the original CSS.
 
+pub mod config;
 pub mod math;
+pub mod state;
 
+use config::AppConfig;
+use state::AppState;
 use sycamore::prelude::*;
 use sycamore::web::on_mount;
 use wasm_bindgen::prelude::*;
@@ -21,6 +25,15 @@ extern "C" {
 
     #[wasm_bindgen(js_namespace = window, js_name = initDemoChart)]
     fn init_demo_chart(canvas_id: &str);
+
+    #[wasm_bindgen(js_namespace = ["window", "electronAPI"], js_name = loadConfig)]
+    fn load_config() -> js_sys::Promise;
+
+    #[wasm_bindgen(js_namespace = ["window", "electronAPI"], js_name = saveConfig)]
+    fn save_config(config_json: &str) -> js_sys::Promise;
+
+    #[wasm_bindgen(js_namespace = ["window", "electronAPI"], js_name = getConfigPath)]
+    fn get_config_path() -> js_sys::Promise;
 }
 
 /// Counter component demonstrating Sycamore reactivity.
@@ -146,6 +159,287 @@ fn ChartDemo() -> View {
                 div(class="chart-container") {
                     canvas(id="demo-chart") {}
                 }
+            }
+        }
+    }
+}
+
+// ============================================================================
+// Settings & State Components
+// ============================================================================
+
+/// Settings card component for config interaction.
+/// Allows editing username, dark mode, notifications, and saving to disk.
+#[component]
+fn SettingsCard() -> View {
+    let app_state = use_context::<AppState>();
+
+    let username = create_signal(String::new());
+    let dark_mode = create_signal(false);
+    let notifications = create_signal(true);
+    let config_path = create_signal(String::from("Loading..."));
+    let save_status = create_signal(String::new());
+
+    // Load config on mount
+    on_mount(move || {
+        wasm_bindgen_futures::spawn_local(async move {
+            // Get config path
+            match wasm_bindgen_futures::JsFuture::from(get_config_path()).await {
+                Ok(result) => {
+                    if let Some(s) = result.as_string() {
+                        config_path.set(s);
+                    }
+                }
+                Err(_) => config_path.set("Error getting path".to_string()),
+            }
+
+            // Load config
+            match wasm_bindgen_futures::JsFuture::from(load_config()).await {
+                Ok(result) => {
+                    if let Some(json) = result.as_string() {
+                        if let Ok(config) = serde_json::from_str::<AppConfig>(&json) {
+                            username.set(config.username.clone());
+                            dark_mode.set(config.dark_mode);
+                            notifications.set(config.notifications_enabled);
+                            app_state.username.set(config.username);
+                        }
+                    }
+                }
+                Err(e) => log(&format!("Error loading config: {:?}", e)),
+            }
+        });
+    });
+
+    let on_save = move |_| {
+        let config = AppConfig {
+            username: username.get_clone(),
+            dark_mode: dark_mode.get(),
+            notifications_enabled: notifications.get(),
+            auto_save_interval: 300,
+            theme: "system".to_string(),
+        };
+
+        // Update global state
+        app_state.username.set(config.username.clone());
+
+        let json = serde_json::to_string(&config).unwrap_or_default();
+
+        wasm_bindgen_futures::spawn_local(async move {
+            match wasm_bindgen_futures::JsFuture::from(save_config(&json)).await {
+                Ok(result) => {
+                    if result.as_bool() == Some(true) {
+                        save_status.set("Saved!".to_string());
+                    } else {
+                        save_status.set("Save failed".to_string());
+                    }
+                }
+                Err(_) => save_status.set("Error saving".to_string()),
+            }
+
+            // Clear status after 2 seconds
+            gloo_timers::callback::Timeout::new(2000, move || {
+                save_status.set(String::new());
+            })
+            .forget();
+        });
+    };
+
+    view! {
+        div(class="card bg-base-200 shadow-xl") {
+            div(class="card-body") {
+                h2(class="card-title text-primary") { "Settings" }
+
+                // Username input
+                div(class="form-control") {
+                    label(class="label") {
+                        span(class="label-text") { "Username" }
+                    }
+                    input(
+                        r#type="text",
+                        class="input input-bordered",
+                        placeholder="Enter username",
+                        bind:value=username,
+                    )
+                }
+
+                // Dark mode toggle
+                div(class="form-control") {
+                    label(class="label cursor-pointer") {
+                        span(class="label-text") { "Dark Mode" }
+                        input(
+                            r#type="checkbox",
+                            class="toggle toggle-primary",
+                            bind:checked=dark_mode,
+                        )
+                    }
+                }
+
+                // Notifications checkbox
+                div(class="form-control") {
+                    label(class="label cursor-pointer") {
+                        span(class="label-text") { "Enable Notifications" }
+                        input(
+                            r#type="checkbox",
+                            class="checkbox checkbox-primary",
+                            bind:checked=notifications,
+                        )
+                    }
+                }
+
+                // Save button
+                div(class="card-actions justify-start mt-4") {
+                    button(class="btn btn-primary", on:click=on_save) { "Save Settings" }
+                    (if !save_status.get_clone().is_empty() {
+                        view! {
+                            span(class="badge badge-success ml-2") { (save_status.get_clone()) }
+                        }
+                    } else {
+                        view! {}
+                    })
+                }
+
+                // Config path
+                div(class="text-xs text-base-content/50 mt-4") {
+                    "Config: " (config_path.get_clone())
+                }
+            }
+        }
+    }
+}
+
+/// Global state card component showing state interaction.
+/// Displays username from state, counter with +/- buttons, and busy toggle.
+#[component]
+fn GlobalStateCard() -> View {
+    let app_state = use_context::<AppState>();
+
+    view! {
+        div(class="card bg-base-200 shadow-xl") {
+            div(class="card-body") {
+                h2(class="card-title text-primary") { "Global State" }
+
+                // Username stat
+                div(class="stat p-0") {
+                    div(class="stat-title") { "Current User" }
+                    div(class="stat-value text-lg") {
+                        (if app_state.username.get_clone().is_empty() {
+                            "(not set)".to_string()
+                        } else {
+                            app_state.username.get_clone()
+                        })
+                    }
+                }
+
+                // Counter
+                div(class="flex items-center gap-4 mt-4") {
+                    span(class="font-medium") { "Counter:" }
+                    div(class="join") {
+                        button(
+                            class="btn btn-outline btn-sm join-item",
+                            on:click=move |_| app_state.decrement(),
+                        ) { "-" }
+                        span(class="badge badge-secondary badge-lg join-item px-4") {
+                            (app_state.counter.get())
+                        }
+                        button(
+                            class="btn btn-outline btn-sm join-item",
+                            on:click=move |_| app_state.increment(),
+                        ) { "+" }
+                    }
+                }
+
+                // Busy toggle
+                div(class="form-control mt-4") {
+                    label(class="label cursor-pointer") {
+                        span(class="label-text") { "App Busy" }
+                        input(
+                            r#type="checkbox",
+                            class="toggle toggle-warning",
+                            bind:checked=app_state.is_busy,
+                        )
+                    }
+                }
+
+                // Loading spinner when busy
+                (if app_state.is_busy.get() {
+                    view! {
+                        div(class="flex items-center gap-2 mt-2") {
+                            span(class="loading loading-spinner loading-sm") {}
+                            span(class="text-sm text-base-content/70") { "Working..." }
+                        }
+                    }
+                } else {
+                    view! {}
+                })
+            }
+        }
+    }
+}
+
+/// Quick actions card demonstrating cross-component state interaction.
+/// Notification input, counter presets, and notification display.
+#[component]
+fn QuickActionsCard() -> View {
+    let app_state = use_context::<AppState>();
+    let notification_input = create_signal(String::new());
+
+    let send_notification = move |_| {
+        let msg = notification_input.get_clone();
+        if !msg.is_empty() {
+            app_state.notify(msg);
+            notification_input.set(String::new());
+        }
+    };
+
+    view! {
+        div(class="card bg-base-200 shadow-xl") {
+            div(class="card-body") {
+                h2(class="card-title text-primary") { "Quick Actions" }
+
+                // Notification input
+                div(class="join w-full") {
+                    input(
+                        r#type="text",
+                        class="input input-bordered join-item flex-1",
+                        placeholder="Enter notification message",
+                        bind:value=notification_input,
+                    )
+                    button(
+                        class="btn btn-accent join-item",
+                        on:click=send_notification,
+                    ) { "Send" }
+                }
+
+                // Counter presets
+                div(class="flex gap-2 mt-4") {
+                    button(
+                        class="btn btn-outline btn-sm",
+                        on:click=move |_| app_state.set_counter(0),
+                    ) { "Reset" }
+                    button(
+                        class="btn btn-outline btn-sm",
+                        on:click=move |_| app_state.set_counter(10),
+                    ) { "Set 10" }
+                    button(
+                        class="btn btn-outline btn-sm",
+                        on:click=move |_| app_state.set_counter(100),
+                    ) { "Set 100" }
+                }
+
+                // Active notification display
+                (if let Some(notification) = app_state.notification.get_clone() {
+                    view! {
+                        div(class="alert alert-info mt-4") {
+                            span { (notification) }
+                            button(
+                                class="btn btn-ghost btn-xs",
+                                on:click=move |_| app_state.clear_notification(),
+                            ) { "Dismiss" }
+                        }
+                    }
+                } else {
+                    view! {}
+                })
             }
         }
     }
@@ -292,6 +586,12 @@ fn MainContent() -> View {
     view! {
         main(class="main-content p-6") {
             div(class="flex flex-col gap-6") {
+                // State and Config cards in a grid
+                div(class="grid grid-cols-1 lg:grid-cols-3 gap-4") {
+                    SettingsCard {}
+                    GlobalStateCard {}
+                    QuickActionsCard {}
+                }
                 Stuff {}
                 BackendDemo {}
                 ChartDemo {}
@@ -364,6 +664,10 @@ fn AppFooter() -> View {
 /// To remove sections, simply delete the corresponding component from this view.
 #[component]
 fn App() -> View {
+    // Create and provide global app state
+    let app_state = AppState::new();
+    provide_context(app_state);
+
     view! {
         div(class="app-layout") {
             TopBar {}

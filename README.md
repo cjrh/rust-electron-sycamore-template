@@ -5,9 +5,23 @@
 
 A full Rust stack template for building desktop applications with Electron.
 
-- **Frontend**: [Sycamore](https://sycamore-rs.netlify.app/) reactive UI framework compiled to WASM
-- **Backend**: [Neon](https://neon-rs.dev/) for native Node.js bindings (file I/O, system APIs, etc.)
+- **Frontend**: [Sycamore](https://sycamore-rs.netlify.app/) reactive UI framework written in Rust, compiled to WASM
+- **Backend**: [Neon](https://neon-rs.dev/) for native Node.js bindings (file I/O, system APIs, etc.) written in Rust
 - **Shell**: Electron with IPC bridge between WASM frontend and Neon backend
+
+## Features
+
+- Use [cargo-generate](https://github.com/cargo-generate/cargo-generate) to create a new project from this template. Instructions below.
+- Rust in frontend ([Sycamore](https://sycamore-rs.netlify.app/)) **and** Rust in the backend ([Neon](https://neon-rs.dev/))
+- [DaisyUI](https://daisyui.com/) component framework already integrated — CSS only, no JavaScript runtime
+- Typical application GUI layout with header, footer, resizable sidebars, and main content area
+- Demo code showing shared application state between different UI components using Sycamore's context system
+- Demo code showing how to call Rust backend functions from the frontend via IPC
+- Demo code showing persistent app configuration stored in a JSON file, loaded at runtime. Uses the [directories](https://crates.io/crates/directories) crate to find the appropriate config directory for each OS (`~/.config/`, `~/Library/Application Support/`, `%APPDATA%`). The config directory uses the project name you choose during cargo-generate.
+- Demo example integration of external JavaScript libraries (Chart.js) with Sycamore/WASM
+- Standard Electron procedures for bundling
+- Already written asset bundling code using [Trunk](https://trunkrs.dev/) for WASM compilation and automatic asset bundling
+- [just](https://github.com/casey/just) command runner with pre-configured build, dev, and maintenance commands
 
 ## Overview
 
@@ -44,6 +58,29 @@ You'll be prompted for:
 - **Project name** (kebab-case, e.g., `my-app`)
 - **Description**
 - **Author**
+
+### Now what?
+
+Look at the `justfile` commands to build and run the app.
+Read more in this README to understand how the pieces fit together.
+You need to install the [`just`](https://just.systems) command runner first.
+
+### What is Neon?
+
+Neon is a framework for writing native Node.js modules in Rust.
+It allows you to create high-performance backend code that can be called from JavaScript running in the Electron main process.
+The important point is that this Rust code is fully native.
+It runs on the host OS.
+This template provides demo code showing how to call Neon functions from the frontend via IPC.
+
+### What is Sycamore?
+
+Sycamore is a reactive UI framework for building web applications in Rust.
+It compiles to WebAssembly (WASM) and runs in the browser environment.
+In this template, Sycamore is used to build the frontend UI of the Electron application.
+The Sycamore code is compiled to WASM using Trunk and loaded in the Electron renderer process.
+We can communicate between the Sycamore frontend and the Neon backend using Electron's IPC mechanism.
+Demo code is provided to show this.
 
 ## Justfile Commands
 
@@ -114,6 +151,8 @@ For Electron desktop applications, **always prefer bundling JavaScript libraries
 Only use CDN-loaded assets if you have a specific requirement for it (e.g., loading user-specified external resources).
 
 ### How to Add a JavaScript Library
+
+This template includes an example of integrating Chart.js. To add your own library, follow these steps:
 
 #### 1. Install via npm
 
@@ -215,7 +254,10 @@ To remove this example from your project, delete the `ChartDemo` component and i
 
 ## Styling with DaisyUI
 
-This template uses [DaisyUI](https://daisyui.com/), a component library built on Tailwind CSS. It provides pre-built UI components (buttons, cards, alerts, etc.) that work with Tailwind's utility classes.
+This template uses [DaisyUI](https://daisyui.com/), a component library built on Tailwind CSS.
+It provides pre-built UI components (buttons, cards, alerts, etc.) that work with Tailwind's utility classes.
+You are not forced to use DaisyUI and it can be removed easily if required.
+However, it is not so easy to find a comparable UI component library that is CSS-only.
 
 ### How It Works
 
@@ -280,3 +322,35 @@ If you prefer vanilla CSS or a different styling approach:
    ```
 
 After these changes, the app will use `styles-vanilla.css`, which contains the original styling.
+
+## Bloat (or, why Electron?)
+
+Yes, Electron is heavy.
+
+That said, it contains a lot of functionality out of the box that would be difficult to replicate with other toolkits.
+
+If cross-platform compatibility is not required, there are much lighter alternatives available.
+But the "bloat" is not for nothing: the extensive Web APIs provided by Chromium are very useful for building complex desktop applications.
+And they work in a cross-platform way.
+It's also great for cross-platform [accessibility](https://www.electronjs.org/docs/latest/tutorial/accessibility) support.
+
+Even with other lighter frameworks that are supposed to be cross-platform, it is easy to find yourself in a situation where platform-specific code is needed anyway.
+For lighter-weight applications, I like to use [Iced](https://iced.rs/).
+Iced is great!
+I use it for systray applications, or audio plugins, and things like that where Electron is too heavy and the extra features are not required.
+But as good as Iced is, you can quickly find yourself in a cross-platform problem if the thing you're trying to do is not supported natively by Iced or even some other Rust crate.
+This is not the fault of Iced; it's just the reality of cross-platform desktop development.
+In these scenarios, either you have to write the cross-platform abstraction layer yourself, or you have to use something like Electron.
+(Or, wrap an existing C++ library with Rust bindings, which can be a fair amount of intricate work.)
+Electron is big because it bundles all of these APIs for you. And in a cross-platform way.
+
+Ah yes, but what about Webviews you say?
+Well consider that, for example on linux, you're mostly going to be relying on whatever version of Webkit GTK happens to be available to run your app.
+Quite a few things don't work in the way you expect.
+I recently found problems with audio and the integration with the rest of the system, for example.
+With webviews, you are at the mercy of the platform's webview implementation, which can be spotty.
+As soon as you find yourself reading about platform-specific problems with Webviews, it's time to ask whether you might be better off with bundling your own Chromium instance that you know works the way you expect.
+Even if Electron has bugs, even if they're similar bugs, at least it is likely the bugs are the same across all platforms.
+
+It is worth reading the [Why Electron](https://www.electronjs.org/docs/latest/why-electron) page over at the Electron project to understand the rationale.
+I find this document is balanced and considered, and the points raised resonate will with my own experiences.

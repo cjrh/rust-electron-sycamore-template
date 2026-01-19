@@ -7,6 +7,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   // Call the Rust add function via IPC
   rustAdd: (a, b) => ipcRenderer.invoke('rust-add', a, b),
+
+  // Config functions
+  loadConfig: () => ipcRenderer.invoke('load-config'),
+  saveConfig: (json) => ipcRenderer.invoke('save-config', json),
+  getConfigPath: () => ipcRenderer.invoke('get-config-path'),
 });
 
 console.log('Preload script loaded - electronAPI exposed');

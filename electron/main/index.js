@@ -33,6 +33,19 @@ ipcMain.handle('rust-add', async (event, a, b) => {
   return null;
 });
 
+// Config handlers
+ipcMain.handle('load-config', async () => {
+  return rustBackend?.loadConfig() ?? '{}';
+});
+
+ipcMain.handle('save-config', async (event, json) => {
+  return rustBackend?.saveConfig(json) ?? false;
+});
+
+ipcMain.handle('get-config-path', async () => {
+  return rustBackend?.getConfigPath() ?? 'unknown';
+});
+
 const createWindow = () => {
   const win = new BrowserWindow({
     width: 900,
