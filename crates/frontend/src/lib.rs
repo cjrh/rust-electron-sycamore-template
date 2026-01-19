@@ -9,6 +9,7 @@ pub mod math;
 use sycamore::prelude::*;
 use sycamore::web::on_mount;
 use wasm_bindgen::prelude::*;
+use web_sys::{Element, PointerEvent};
 
 #[wasm_bindgen]
 extern "C" {
@@ -150,28 +151,224 @@ fn ChartDemo() -> View {
     }
 }
 
-/// Main application component.
-///
-/// DAISYUI/Tailwind classes used: container, mx-auto, p-8, flex, flex-col, gap-6
-/// Original: main element with no specific classes
+// ============================================================================
+// Layout Components
+// ============================================================================
+
+/// Top navigation bar component.
+/// Uses daisyUI navbar with start/center/end sections.
 #[component]
-fn App() -> View {
+fn TopBar() -> View {
     view! {
-        // DAISYUI: container mx-auto -> centers content with max-width
-        main(class="container mx-auto p-8 max-w-4xl") {
-            // DAISYUI: text-center for header alignment
-            div(class="text-center mb-8") {
-                h1(class="text-4xl font-bold") { "{{project-name}}" }
-                p(class="subtitle mt-2") {
-                    "{{description}}"
+        div(class="navbar bg-base-200 shadow-lg") {
+            div(class="navbar-start") {
+                a(class="btn btn-ghost text-xl") { "{{project-name}}" }
+            }
+            div(class="navbar-center hidden lg:flex") {
+                ul(class="menu menu-horizontal px-1") {
+                    li { a { "Home" } }
+                    li { a { "About" } }
                 }
             }
-            // DAISYUI: flex flex-col gap-6 -> vertical stack with spacing
+            div(class="navbar-end") {
+                button(class="btn btn-primary btn-sm") { "Action" }
+            }
+        }
+    }
+}
+
+/// Left sidebar component with dynamic width.
+#[component(inline_props)]
+fn LeftSidebar(width: Signal<f64>) -> View {
+    let style = move || format!("width: {}px", width.get());
+
+    view! {
+        aside(class="sidebar bg-base-200", style=style) {
+            ul(class="menu p-4") {
+                li(class="menu-title") { "Navigation" }
+                li { a { "Dashboard" } }
+                li { a { "Projects" } }
+                li { a { "Settings" } }
+            }
+        }
+    }
+}
+
+/// Right sidebar component with dynamic width.
+#[component(inline_props)]
+fn RightSidebar(width: Signal<f64>) -> View {
+    let style = move || format!("width: {}px", width.get());
+
+    view! {
+        aside(class="sidebar bg-base-200", style=style) {
+            div(class="p-4") {
+                h3(class="font-bold mb-2") { "Details" }
+                p(class="text-sm text-base-content/70") {
+                    "Select an item to view details."
+                }
+            }
+        }
+    }
+}
+
+/// Resize handle component for dragging between panels.
+#[component(inline_props)]
+fn ResizeHandle(
+    panel_width: Signal<f64>,
+    resize_left: bool,
+    min_width: f64,
+    max_width: f64,
+    is_any_dragging: Signal<bool>,
+) -> View {
+    let is_dragging = create_signal(false);
+    let drag_start_x = create_signal(0.0);
+    let start_width = create_signal(0.0);
+
+    let handle_class = move || {
+        if is_dragging.get() {
+            "resize-handle dragging"
+        } else {
+            "resize-handle"
+        }
+    };
+
+    let on_pointer_down = move |e: PointerEvent| {
+        is_dragging.set(true);
+        is_any_dragging.set(true);
+        drag_start_x.set(e.client_x() as f64);
+        start_width.set(panel_width.get());
+
+        if let Some(target) = e.target() {
+            if let Ok(element) = target.dyn_into::<Element>() {
+                let _ = element.set_pointer_capture(e.pointer_id());
+            }
+        }
+    };
+
+    let on_pointer_move = move |e: PointerEvent| {
+        if !is_dragging.get() {
+            return;
+        }
+
+        let delta = e.client_x() as f64 - drag_start_x.get();
+        let new_width = if resize_left {
+            start_width.get() + delta
+        } else {
+            start_width.get() - delta
+        };
+
+        let clamped = new_width.max(min_width).min(max_width);
+        panel_width.set(clamped);
+    };
+
+    let on_pointer_up = move |e: PointerEvent| {
+        if !is_dragging.get() {
+            return;
+        }
+
+        is_dragging.set(false);
+        is_any_dragging.set(false);
+
+        if let Some(target) = e.target() {
+            if let Ok(element) = target.dyn_into::<Element>() {
+                let _ = element.release_pointer_capture(e.pointer_id());
+            }
+        }
+    };
+
+    view! {
+        div(
+            class=handle_class,
+            on:pointerdown=on_pointer_down,
+            on:pointermove=on_pointer_move,
+            on:pointerup=on_pointer_up,
+        )
+    }
+}
+
+/// Main content area wrapper.
+#[component]
+fn MainContent() -> View {
+    view! {
+        main(class="main-content p-6") {
             div(class="flex flex-col gap-6") {
                 Stuff {}
                 BackendDemo {}
                 ChartDemo {}
             }
+        }
+    }
+}
+
+/// Main area component that orchestrates the resizable sidebar layout.
+#[component]
+fn MainArea() -> View {
+    let left_width = create_signal(200.0);
+    let right_width = create_signal(200.0);
+    let is_dragging = create_signal(false);
+
+    let area_class = move || {
+        if is_dragging.get() {
+            "main-area resizing"
+        } else {
+            "main-area"
+        }
+    };
+
+    view! {
+        div(class=area_class) {
+            LeftSidebar(width=left_width)
+            ResizeHandle(
+                panel_width=left_width,
+                resize_left=true,
+                min_width=100.0,
+                max_width=400.0,
+                is_any_dragging=is_dragging,
+            )
+            MainContent {}
+            ResizeHandle(
+                panel_width=right_width,
+                resize_left=false,
+                min_width=100.0,
+                max_width=400.0,
+                is_any_dragging=is_dragging,
+            )
+            RightSidebar(width=right_width)
+        }
+    }
+}
+
+/// Application footer component.
+#[component]
+fn AppFooter() -> View {
+    view! {
+        footer(class="footer footer-center p-4 bg-base-200 text-base-content") {
+            aside {
+                p { "Built with Sycamore, Electron, and DaisyUI" }
+            }
+        }
+    }
+}
+
+// ============================================================================
+// Main Application
+// ============================================================================
+
+/// Main application component with standard layout.
+///
+/// Layout structure:
+/// - TopBar: Navigation bar at top
+/// - MainArea: Contains LeftSidebar, MainContent, RightSidebar with resize handles
+/// - AppFooter: Footer at bottom
+///
+/// To remove sections, simply delete the corresponding component from this view.
+#[component]
+fn App() -> View {
+    view! {
+        div(class="app-layout") {
+            TopBar {}
+            MainArea {}
+            AppFooter {}
         }
     }
 }

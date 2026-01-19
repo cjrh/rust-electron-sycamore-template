@@ -40,3 +40,46 @@ h1 {
 .subtitle {
     color: var(--app-text-muted);
 }
+
+/* Full-height app layout */
+.app-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Main area with sidebars */
+.main-area {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.sidebar {
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    min-width: 200px;
+}
+
+/* Resize handle */
+.resize-handle {
+    width: 4px;
+    cursor: col-resize;
+    background: transparent;
+    flex-shrink: 0;
+}
+
+.resize-handle:hover,
+.resize-handle.dragging {
+    background: oklch(var(--p));
+}
+
+.resizing * {
+    user-select: none;
+}
