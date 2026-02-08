@@ -51,7 +51,7 @@ or
 cargo binstall cargo-generate (faster)
 
 # Generate from this template
-cargo generate --git https://github.com/youruser/rust-electron-sycamore-template
+cargo generate --git https://github.com/cjrh/rust-electron-sycamore-template
 ```
 
 You'll be prompted for:
