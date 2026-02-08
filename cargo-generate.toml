@@ -1,14 +1,10 @@
 [template]
 cargo_generate_version = ">=0.18.0"
 # Files to exclude from processing (binary files, etc.)
-exclude = ["*.wasm", "*.node"]
+exclude = ["*.wasm", "*.node", "*.png", "*.gif", ".github/**"]
 # Don't copy the template's LICENSE - users choose their own
-ignore = ["LICENSE"]
-
-[placeholders.project-name]
-type = "string"
-prompt = "Project name (kebab-case)?"
-regex = "^[a-z][a-z0-9-]*$"
+# Also ignore node_modules and build artifacts
+ignore = ["LICENSE", "node_modules", "target"]
 
 [placeholders.description]
 type = "string"
